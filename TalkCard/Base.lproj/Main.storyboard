@@ -171,13 +171,7 @@
                         <viewLayoutGuide key="safeArea" id="Yb1-0m-YFV"/>
                         <color key="backgroundColor" systemColor="tertiarySystemGroupedBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Title" id="wjY-HL-eLc">
-                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="R6a-Jm-1jb">
-                            <connections>
-                                <action selector="saveButtonPressed" destination="6oD-MH-H6e" id="JE2-1Z-Yal"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="Title" id="wjY-HL-eLc"/>
                     <connections>
                         <outlet property="conditionLabel" destination="j8B-LD-vjt" id="RKo-7b-wXo"/>
                         <outlet property="nameLabel" destination="1zC-hZ-fa3" id="xni-Ad-zTI"/>

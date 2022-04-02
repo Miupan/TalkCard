@@ -7,9 +7,8 @@
 
 import AVFoundation
 import UIKit
-import CoreData
 
-class EditViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDelegate, UIImagePickerControllerDelegate & UINavigationControllerDelegate, NSFetchedResultsControllerDelegate, UITextFieldDelegate{
+class EditViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDelegate, UIImagePickerControllerDelegate & UINavigationControllerDelegate, UITextFieldDelegate {
     
     var number: Int = 0
     
@@ -17,15 +16,9 @@ class EditViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
     var audioPlayer: AVAudioPlayer!
     var isRecording = false
     var isPlaying = false
-    
-    let settings = [
-        AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-        AVSampleRateKey: 44100,
-        AVNumberOfChannelsKey: 2,
-        AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-    ]
-    
-    let dataManager = DataManager.shared
+
+    var recievedTitle: String = ""
+
     
     @IBOutlet var registationImage:UIImageView!
     @IBOutlet var nameLabel:UILabel!
@@ -33,18 +26,15 @@ class EditViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
     @IBOutlet var nameTextField:UITextField!
     @IBOutlet var recordButton: UIButton!
     @IBOutlet var playButton: UIButton!
-    
-    lazy var fetchedResultsController: NSFetchedResultsController<Card> = {
-        let _controller:NSFetchedResultsController<Card> = dataManager.getFetchedResultController(with: ["date"])
-        _controller.delegate = self
-        return _controller
-    }()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         //nameTextFieldのdelegateをEditViewControllerが受け取る
         nameTextField.delegate = self
-        // Do any additional setup after loading the view.
+
+        if recievedTitle == "" {
+            //タイトルがきてないので再生も録音もできないのでエラー処理をする
+        }
     }
     
     //画面をタッチした時キーボードをしまう
@@ -59,23 +49,20 @@ class EditViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
         return true
     }
 
-    //CoreDataでデータの取得
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        do {
-            try fetchedResultsController.performFetch()
-        } catch {
-            
-            print(error)
-        }
-    }
 
     @IBAction func recordButtonAction(){
         if !isRecording {
             let session = AVAudioSession.sharedInstance()
             try! session.setCategory(AVAudioSession.Category.playAndRecord)
             try! session.setActive(true)
-            
+
+            let settings = [
+                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                AVSampleRateKey: 44100,
+                AVNumberOfChannelsKey: 2,
+                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+            ]
+
             audioRecorder = try! AVAudioRecorder(url: getURL(), settings: settings)
             audioRecorder.delegate = self
             audioRecorder.record()
@@ -95,7 +82,7 @@ class EditViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
     func getURL() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let docsDirect = paths[0]
-        let url = docsDirect.appendingPathComponent(stringFromDate(date: Date(), format: "yyyyMMddHHmmSS"))
+        let url = docsDirect.appendingPathComponent(recievedTitle)
         return url
         
     }
@@ -121,19 +108,7 @@ class EditViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
         }
         
     }
-    
-    func stringFromDate(date: Date, format: String) -> String {
-        let formatter: DateFormatter = DateFormatter()
-        formatter.calendar = Calendar(identifier: .gregorian)
-        formatter.dateFormat = format
-        return formatter.string(from: date)
-    }
-    
-    func add(number: Int){
-        
-    }
-    
-    
+
     //カメラロール使用時に選択した画像をアプリ内に表示するメソッド
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         registationImage.image = info[.editedImage] as? UIImage
@@ -151,32 +126,5 @@ class EditViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
             picker.allowsEditing = true
             present(picker, animated: true, completion: nil)
         }
-        
-    }
-    
-    @IBAction func saveButtonPressed() {
-        guard nameTextField.text != nil else {
-            return
-        }
-        //CoreData
-        let dataManager = DataManager.shared
-        let newCard = dataManager.create()
-        dataManager.saveContext()
     }
 }
-    
-    
-    
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destination.
-     // Pass the selected object to the new view controller.
-     }
-     */
-    
-
-
