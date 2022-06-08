@@ -43,19 +43,15 @@ class EditViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
             //タイトルがきてない→再生も録音もできないのでエラー処理をする
         }
         
-        func readData() -> String{
-            
-        }
-        
         //デフォルト値
         saveData.register(defaults: ["title": "none"])
-        
         nameTextField.text = readData()
         
-        
-        //画像呼び出し
-        
-        registationImage.image = saveData.object(forKey: "image") as? UIImage
+        //保存したデータの読み込み
+        func readData() -> String{
+            let displayName: String = saveData.object(forKey: "title") as!String
+            return displayName
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -70,12 +66,20 @@ class EditViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
         self.view.endEditing(true)
     }
     
-    //Return押した時にキーボードしまう
+    //Return押した時の動作
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        //nameTextFieldに入れた内容を表示
+        testText = nameTextField.text!
+        nameTextField.text = testText
+        
         //キーボードを非表示にする
-        nameTextField.endEditing(true)
+        nameTextField.resignFirstResponder()
         return true
+        
+        //testTextを引数として以下の関数へ
+        saveData(testText:String)
     }
+    
 
     @IBAction func recordButtonAction(){
         if !isRecording {
