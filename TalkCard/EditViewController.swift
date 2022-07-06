@@ -27,7 +27,7 @@ class EditViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlay
     @IBOutlet var playButton: UIButton!
     
     //UserDefaults の導入
-    var saveData: UserDefaults = UserDefaults.standard
+    let saveData: UserDefaults = UserDefaults.standard
     
     //textFieldに入れるtextの初期値
     var testText:String = "none"
